@@ -19,8 +19,10 @@ for key, group in itertools.groupby(csv.reader(open(args.input_file)), lambda x:
     # group is all the photos in an iterator
     photos = list(group) # we need them as a list
 
-    # sort by date
-    photos = sorted(photos, key=lambda x: datetime.datetime.strptime(x[2], "%Y-%m-%d %H:%M:%S.0"))
+    # sort by date; first filtering out anything with a "null" date.
+    photos = filter(lambda x: x[2] != 'null', photos)
+        
+    photos = sorted(photos, key=lambda x:  datetime.datetime.strptime(x[2], "%Y-%m-%d %H:%M:%S.0"))
 
     num_switches = -1 # b/c the first one will always be a switch
     last_has_geotag = None
@@ -34,4 +36,4 @@ for key, group in itertools.groupby(csv.reader(open(args.input_file)), lambda x:
             num_switches += 1
             last_has_geotag = has_geotag
 
-    output_writer.writerow([key, num_switches])
+    output_writer.writerow([key, num_switches, len(photos)])
